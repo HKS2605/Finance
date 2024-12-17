@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Portfolio
+{% endblock %}
+
+{% block main %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-start">Symbol</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Price</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Timestamp</th>
+        </tr>
+    </thead>
+   <tbody>
+
+    {% for transaction in transactions %}
+            <tr>
+                <td class="text-start">{{ transaction.symbol }}</td>
+                <td class="text-end">{{ transaction.shares }}</td>
+                <td class="text-end">${{ transaction.price }}</td>
+                <td class="text-end">${{ transaction.shares * transaction.price }}</td>
+                <td class="text-end">{{ transaction.timestamp }}</td>
+            </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}
