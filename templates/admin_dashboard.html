@@ -1,0 +1,240 @@
+{% extends "layout.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block main %}
+    <h1>Admin Dashboard</h1>
+
+    <h2>Manage Users</h2>
+    <table border="1" class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Cash Balance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>${{ user.cash }}</td>
+                <td>
+                    <!-- Reset Password -->
+                    <form action="/reset_password" method="post" style="display:inline;">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-warning">Reset Password</button>
+                    </form>
+                    <!-- Delete User -->
+                    <form action="/delete_user" method="post" style="display:inline;">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>User Portfolio Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Stock Symbol</th>
+                <th>Total Shares</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in user_portfolio %}
+            <tr>
+                <td>{{ row.user_id }}</td>
+                <td>{{ row.symbol }}</td>
+                <td>{{ row.total_shares }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>User Transaction History</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>User ID</th>
+                <th>Stock Symbol</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in user_transactions %}
+            <tr>
+                <td>{{ transaction.id }}</td>
+                <td>{{ transaction.user_id }}</td>
+                <td>{{ transaction.symbol }}</td>
+                <td>{{ transaction.shares }}</td>
+                <td>${{ transaction.price }}</td>
+                <td>{{ transaction.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Most Traded Stocks Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Trade Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in most_traded_stocks %}
+            <tr>
+                <td>{{ stock.symbol }}</td>
+                <td>{{ stock.trade_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>User Stock Holdings Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Unique Stocks Owned</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for holding in user_holdings %}
+            <tr>
+                <td>{{ holding.user_id }}</td>
+                <td>{{ holding.unique_stocks }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>User Spending Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Total Spent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in user_spending %}
+            <tr>
+                <td>{{ user.user_id }}</td>
+                <td>${{ user.total_spent }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Active Trading Users Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Total Transactions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in active_users %}
+            <tr>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.transaction_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Average Purchase Price per Stock</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Average Purchase Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in average_prices %}
+            <tr>
+                <td>{{ stock.symbol }}</td>
+                <td>${{ stock.average_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Stocks With Highest Profit/Loss Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Total Profit/Loss</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in profit_loss %}
+            <tr>
+                <td>{{ stock.symbol }}</td>
+                <td>${{ stock.total_profit_loss }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Profit and Loss Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Stock Symbol</th>
+                <th>Total Profit/Loss</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in user_profit_loss %}
+            <tr>
+                <td>{{ row.user_id }}</td>
+                <td>{{ row.symbol }}</td>
+                <td>${{ row.total_profit_loss }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Largest Single Transaction Report</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>User ID</th>
+                <th>Stock Symbol</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ largest_transaction.id }}</td>
+                <td>{{ largest_transaction.user_id }}</td>
+                <td>{{ largest_transaction.symbol }}</td>
+                <td>{{ largest_transaction.shares }}</td>
+                <td>${{ largest_transaction.price }}</td>
+                <td>${{ largest_transaction.total_value }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="/logout" class="btn btn-primary">Log Out</a>
+{% endblock %}
