@@ -167,7 +167,7 @@ def login():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-
+        print("dfsadfsaf")
         # Redirect user to home page
         return redirect("/")
 
@@ -369,7 +369,7 @@ def admin_login():
 
         # Remember admin login by setting a session
         session["admin_id"] = admin[0]["id"]
-
+        print("adfdffdsfdf")
         # Redirect directly to admin dashboard
         return render_template("admin_dashboard.html")
 
@@ -377,116 +377,64 @@ def admin_login():
     return render_template("admin_login.html")
 
 
-@app.route("/admin_dashboard")
+@app.route("/admin_dashboard", methods=["GET", "POST"])
 @login_required
 def admin_dashboard():
     """Admin dashboard for managing the application"""
+    # if request.method == "POST":
     # Ensure the current user is an admin
     if "admin_id" not in session:
         return redirect("/admin_login")
 
     # 1. User Portfolio Report: Total shares owned by each user for different stocks
-    user_portfolio = db.execute("""
-        SELECT user_id, symbol, SUM(shares) AS total_shares
-        FROM transactions
-        GROUP BY user_id, symbol
-        HAVING total_shares > 0
-    """)
+    user_portfolio = db.execute("SELECT user_id, symbol, SUM(shares) AS total_shares FROM transactions GROUP BY user_id, symbol HAVING total_shares > 0 ")
 
     # 2. User Transaction History: Full transaction history for all users
-    user_transactions = db.execute("""
-        SELECT id, user_id, symbol, shares, price, timestamp
-        FROM transactions
-        ORDER BY timestamp DESC
-    """)
+    user_transactions = db.execute("SELECT id, user_id, symbol, shares, price, timestamp FROM transactions ORDER BY timestamp DESC")
 
     # 3. Most Traded Stocks Report: Stocks with the highest number of trades
-    most_traded_stocks = db.execute("""
-        SELECT symbol, COUNT(*) AS trade_count
-        FROM transactions
-        GROUP BY symbol
-        ORDER BY trade_count DESC
-        LIMIT 5
-    """)
+    most_traded_stocks = db.execute("SELECT symbol, COUNT(*) AS trade_count FROM transactions GROUP BY symbol ORDER BY trade_count DESC LIMIT 5 ")
 
     # 4. User Stock Holdings Report: Number of unique stocks owned by each user
-    user_holdings = db.execute("""
-        SELECT user_id, COUNT(DISTINCT symbol) AS unique_stocks
-        FROM transactions
-        WHERE shares > 0
-        GROUP BY user_id
-    """)
+    user_holdings = db.execute("SELECT user_id, COUNT(DISTINCT symbol) AS unique_stocks FROM transactions WHERE shares > 0 GROUP BY user_id")
 
     # 5. User Spending Report: Total amount spent by each user
-    user_spending = db.execute("""
-        SELECT user_id, SUM(shares * price) AS total_spent
-        FROM transactions
-        WHERE shares > 0
-        GROUP BY user_id
-        ORDER BY total_spent DESC
-    """)
+    user_spending = db.execute("SELECT user_id, SUM(shares * price) AS total_spent FROM transactions WHERE shares > 0 GROUP BY user_id ORDER BY total_spent DESC ")
 
     # 6. Active Trading Users Report: Users with the most transactions
-    active_users = db.execute("""
-        SELECT user_id, COUNT(*) AS transaction_count
-        FROM transactions
-        GROUP BY user_id
-        ORDER BY transaction_count DESC
-        LIMIT 5
-    """)
+    active_users = db.execute("SELECT user_id, COUNT(*) AS transaction_count FROM transactions GROUP BY user_id ORDER BY transaction_count DESC LIMIT 5")
 
     # 7. Average Purchase Price per Stock: Average price users paid for each stock
-    average_prices = db.execute("""
-        SELECT symbol, AVG(price) AS average_price
-        FROM transactions
-        WHERE shares > 0
-        GROUP BY symbol
-    """)
+    average_prices = db.execute(" SELECT symbol, AVG(price) AS average_price FROM transactions WHERE shares > 0 GROUP BY symbol")
 
     # 8. Stocks With Highest Profit/Loss Report: Stocks with the highest profit or loss
-    profit_loss = db.execute("""
-        SELECT symbol, SUM(shares * price) AS total_profit_loss
-        FROM transactions
-        GROUP BY symbol
-        ORDER BY total_profit_loss DESC
-        LIMIT 5
-    """)
+    profit_loss = db.execute(" SELECT symbol, SUM(shares * price) AS total_profit_loss FROM transactions GROUP BY symbol ORDER BY total_profit_loss DESC LIMIT 5")
 
     # 9. Profit and Loss Report: Overall profit or loss for each user and stock
-    user_profit_loss = db.execute("""
-        SELECT user_id, symbol, SUM(shares * price) AS total_profit_loss
-        FROM transactions
-        GROUP BY user_id, symbol
-        ORDER BY user_id
-    """)
+    user_profit_loss = db.execute("SELECT user_id, symbol, SUM(shares * price) AS total_profit_loss FROM transactions GROUP BY user_id, symbol  ORDER BY user_id")
 
     # 10. Largest Single Transaction Report: Transaction with the highest value
-    largest_transaction = db.execute("""
-        SELECT id, user_id, symbol, shares, price, (shares * price) AS total_value
-        FROM transactions
-        ORDER BY total_value DESC
-        LIMIT 1
-    """)
-    largest_transaction = largest_transaction[0] if largest_transaction else None  # Fetch the first (and only) row
+    # largest_transaction = db.execute("""
+    #     SELECT id, user_id, symbol, shares, price, (shares * price) AS total_value
+    #     FROM transactions
+    #     ORDER BY total_value DESC
+    #     LIMIT 1
+    # """)
+    # largest_transaction = largest_transaction[0] if largest_transaction else None   # Fetch the first (and only) row
 
     # Fetch all users for the Manage Users section
     users = db.execute("SELECT id, username, cash FROM users")
 
+    print(users)
+    print(user_portfolio)
+    print(average_prices)
+
+    print("dfsfef")
+    print("9456454")
+
+
     # Pass all data to the template
-    return render_template(
-        "admin_dashboard.html",
-        users=users,
-        user_portfolio=user_portfolio,
-        user_transactions=user_transactions,
-        most_traded_stocks=most_traded_stocks,
-        user_holdings=user_holdings,
-        user_spending=user_spending,
-        active_users=active_users,
-        average_prices=average_prices,
-        profit_loss=profit_loss,
-        user_profit_loss=user_profit_loss,
-        largest_transaction=largest_transaction
-    )
+    return render_template("admin_dashboard.html",users=users, user_portfolio=user_portfolio, user_transactions=user_transactions, most_traded_stocks=most_traded_stocks, user_holdings=user_holdings, user_spending=user_spending, active_users=active_users, average_prices=average_prices, profit_loss=profit_loss, user_profit_loss=user_profit_loss )
 
 
 
